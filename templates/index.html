@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Euclidean Algorithm – GCD</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/script.js" defer></script>
+</head>
+<body>
+
+<h1>Euclidean Algorithm – GCD</h1>
+
+<section>
+  <h2>Input Manual</h2>
+
+  <label>Bilangan a</label><br>
+  <input id="a" type="number" value="48"><br><br>
+
+  <label>Bilangan b</label><br>
+  <input id="b" type="number" value="18"><br><br>
+
+  <button onclick="hitungManual()">Hitung Manual</button>
+
+  <pre id="manualResult"></pre>
+
+  <h3>Tabel Hasil Input Manual</h3>
+  <table id="manualTable">
+    <thead>
+      <tr>
+        <th>a</th>
+        <th>b</th>
+        <th>Iteratif (ms)</th>
+        <th>Rekursif (ms)</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Input Otomatis (Sesuai TUBES)</h2>
+
+  <button onclick="hitungAuto(100)">n = 100</button>
+  <button onclick="hitungAuto(500)">n = 500</button>
+  <button onclick="hitungAuto(1000)">n = 1000</button>
+  <button onclick="hitungAuto(5000)">n = 5000</button>
+  <button onclick="hitungAuto(10000)">n = 10000</button>
+</section>
+
+<section>
+  <h2>Tabel Analisis Runtime</h2>
+
+  <table id="resultTable">
+    <thead>
+      <tr>
+        <th>Ukuran Input (n)</th>
+        <th>Iteratif (ms)</th>
+        <th>Rekursif (ms)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr data-n="100"><td>100</td><td>-</td><td>-</td></tr>
+      <tr data-n="500"><td>500</td><td>-</td><td>-</td></tr>
+      <tr data-n="1000"><td>1000</td><td>-</td><td>-</td></tr>
+      <tr data-n="5000"><td>5000</td><td>-</td><td>-</td></tr>
+      <tr data-n="10000"><td>10000</td><td>-</td><td>-</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</body>
+</html>

@@ -1,59 +1,107 @@
 package main
 
 import (
-	"fmt"
-	"math/rand"
+	"encoding/json"
+	"html/template"
+	"log"
+	"net/http"
+	"strconv"
 	"time"
 )
 
-// GCD Iteratif
-func gcdIteratif(a, b int) int {
+var tpl = template.Must(template.ParseFiles("templates/index.html"))
+
+const repeat = 100000 // penguatan waktu (time amplification)
+
+/* ======================
+   GCD ITERATIF
+====================== */
+func gcdIter(a, b int64) {
 	for b != 0 {
 		a, b = b, a%b
 	}
-	return a
 }
 
-// GCD Rekursif
-func gcdRekursif(a, b int) int {
+/* ======================
+   GCD REKURSIF
+====================== */
+func gcdRec(a, b int64) {
 	if b == 0 {
-		return a
+		return
 	}
-	return gcdRekursif(b, a%b)
+	gcdRec(b, a%b)
+}
+
+/* ======================
+   HTML
+====================== */
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	tpl.Execute(w, nil)
+}
+
+/* ======================
+   INPUT MANUAL
+====================== */
+func manualHandler(w http.ResponseWriter, r *http.Request) {
+	a, _ := strconv.ParseInt(r.URL.Query().Get("a"), 10, 64)
+	b, _ := strconv.ParseInt(r.URL.Query().Get("b"), 10, 64)
+
+	start := time.Now()
+	for i := 0; i < repeat; i++ {
+		gcdIter(a, b)
+	}
+	iterMs := float64(time.Since(start).Nanoseconds()) / 1e6 / repeat
+
+	start = time.Now()
+	for i := 0; i < repeat; i++ {
+		gcdRec(a, b)
+	}
+	recMs := float64(time.Since(start).Nanoseconds()) / 1e6 / repeat
+
+	json.NewEncoder(w).Encode(map[string]any{
+		"a":       a,
+		"b":       b,
+		"iter_ms": iterMs,
+		"rec_ms":  recMs,
+	})
+}
+
+/* ======================
+   INPUT OTOMATIS (TUBES)
+====================== */
+func autoHandler(w http.ResponseWriter, r *http.Request) {
+	n, _ := strconv.ParseInt(r.URL.Query().Get("n"), 10, 64)
+
+	a := n
+	b := n - 1
+
+	start := time.Now()
+	for i := 0; i < repeat; i++ {
+		gcdIter(a, b)
+	}
+	iterMs := float64(time.Since(start).Nanoseconds()) / 1e6 / repeat
+
+	start = time.Now()
+	for i := 0; i < repeat; i++ {
+		gcdRec(a, b)
+	}
+	recMs := float64(time.Since(start).Nanoseconds()) / 1e6 / repeat
+
+	json.NewEncoder(w).Encode(map[string]any{
+		"n":       n,
+		"iter_ms": iterMs,
+		"rec_ms":  recMs,
+	})
 }
 
 func main() {
-	rand.Seed(time.Now().UnixNano())
+	http.HandleFunc("/", indexHandler)
+	http.HandleFunc("/api/manual", manualHandler)
+	http.HandleFunc("/api/auto", autoHandler)
 
-	fmt.Println("=== Analisis Efisiensi Otomatis ===")
-	inputSizes := []int{1, 10, 100, 1000, 5000, 10000}
-	const repeat = 1000000 // dinaikkan dari 100.000 ke 1 juta
+	fs := http.FileServer(http.Dir("static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
-	// Header tabel rapi
-	fmt.Printf("%-8s %-15s %-15s\n", "N", "Iteratif (ns)", "Rekursif (ns)")
-
-	for _, N := range inputSizes {
-		// Pilih bilangan acak dari 1 sampai N
-		x := rand.Intn(N) + 1
-		y := rand.Intn(N) + 1
-
-		// Iteratif
-		start := time.Now()
-		for i := 0; i < repeat; i++ {
-			_ = gcdIteratif(x, y)
-		}
-		iterTime := time.Since(start).Nanoseconds()
-
-		// Rekursif
-		start = time.Now()
-		for i := 0; i < repeat; i++ {
-			_ = gcdRekursif(x, y)
-		}
-		recTime := time.Since(start).Nanoseconds()
-
-		// Cetak hasil rapi
-		fmt.Printf("%-8d %-15d %-15d\n", N, iterTime, recTime)
-	}
-
-	fmt.Println("\nSelesai! Data siap untuk dibuat grafik.")
+	log.Println("Server running at http://localhost:8080")
+	http.ListenAndServe(":8080", nil)
 }
