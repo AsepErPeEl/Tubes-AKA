@@ -11,20 +11,14 @@ import (
 
 var tpl = template.Must(template.ParseFiles("templates/index.html"))
 
-const repeat = 100000 // penguatan waktu (time amplification)
+const repeat = 100000
 
-/* ======================
-   GCD ITERATIF
-====================== */
 func gcdIter(a, b int64) {
 	for b != 0 {
 		a, b = b, a%b
 	}
 }
 
-/* ======================
-   GCD REKURSIF
-====================== */
 func gcdRec(a, b int64) {
 	if b == 0 {
 		return
@@ -32,16 +26,10 @@ func gcdRec(a, b int64) {
 	gcdRec(b, a%b)
 }
 
-/* ======================
-   HTML
-====================== */
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	tpl.Execute(w, nil)
 }
 
-/* ======================
-   INPUT MANUAL
-====================== */
 func manualHandler(w http.ResponseWriter, r *http.Request) {
 	a, _ := strconv.ParseInt(r.URL.Query().Get("a"), 10, 64)
 	b, _ := strconv.ParseInt(r.URL.Query().Get("b"), 10, 64)
@@ -66,9 +54,6 @@ func manualHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-/* ======================
-   INPUT OTOMATIS (TUBES)
-====================== */
 func autoHandler(w http.ResponseWriter, r *http.Request) {
 	n, _ := strconv.ParseInt(r.URL.Query().Get("n"), 10, 64)
 

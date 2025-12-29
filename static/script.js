@@ -11,7 +11,7 @@ async function hitungManual() {
     `Iteratif = ${data.iter_ms.toFixed(6)} ms\n` +
     `Rekursif = ${data.rec_ms.toFixed(6)} ms`;
 
-  // TAMBAH KE TABEL MANUAL
+
   const tbody = document.querySelector("#manualTable tbody");
   const row = document.createElement("tr");
   row.innerHTML = `
